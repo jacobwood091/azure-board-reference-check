@@ -11,5 +11,3 @@ jobs:
     uses: jacobwood091/azure-board-reference-check/.github/workflows/prompt-for-azure-board-item.yaml@v1
     with:
       skip-drafts: true
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

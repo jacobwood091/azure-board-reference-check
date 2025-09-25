@@ -10,10 +10,6 @@ on:
         required: false
         type: boolean
         default: true
-    secrets:
-      GITHUB_TOKEN:
-        description: "GitHub token for API access"
-        required: false
 
 jobs:
   azure-board-check:
@@ -33,5 +29,5 @@ jobs:
         id: check
         uses: ./
         with:
-          token: ${{ secrets.GITHUB_TOKEN || github.token }}
+          token: ${{ github.token }}
           skip-drafts: ${{ inputs.skip-drafts || true }}
