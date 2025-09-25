@@ -22,10 +22,16 @@ jobs:
       checks: write
       pull-requests: read
       contents: read
+
+    outputs:
+      ab-numbers: ${{ steps.check.outputs.ab-numbers }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Check for Azure Board Reference
         id: check
-        uses: jacobwood091/azure-board-reference-check
+        uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN || github.token }}
           skip-drafts: ${{ inputs.skip-drafts || true }}
