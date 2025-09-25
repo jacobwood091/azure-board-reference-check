@@ -1,0 +1,44 @@
+{
+  "name": "azure-board-reference-check",
+  "version": "1.0.0-beta.1",
+  "description": "A simple GitHub Action to check if a PR contains a reference to an Azure Board work item.",
+  "main": "dist/index.js",
+  "module": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "ncc build index.js --license licenses.txt",
+    "start": "node index",
+    "lint": "prettier --check . && eslint --format codeframe ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JacobWood091/azure-board-reference-check.git"
+  },
+  "keywords": [
+    "azure",
+    "azure-boards",
+    "github-action",
+    "pull-request",
+    "work-item"
+  ],
+  "bugs": {
+    "url": "https://github.com/JacobWood091/azure-board-reference-check/issues"
+  },
+  "homepage": "https://github.com/JacobWood091/azure-board-reference-check#readme",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.4",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-formatter-codeframe": "^7.32.1",
+    "eslint-plugin-import": "^2.26.0",
+    "prettier": "^3.6.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

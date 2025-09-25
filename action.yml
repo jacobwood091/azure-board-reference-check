@@ -1,0 +1,16 @@
+name: "Azure Board Reference Check"
+description: "A GitHub Action to check if a PR contains a reference to an Azure Board work item"
+branding:
+  icon: "list"
+  color: "blue"
+inputs:
+  skip-drafts:
+    description: "Skip validation for draft PRs"
+    required: false
+    default: "true"
+outputs:
+  ab-numbers:
+    description: "Array of Azure Board work item numbers found (JSON array string)"
+runs:
+  using: "node20"
+  main: "dist/index.js"

@@ -1,0 +1,15 @@
+# Example: How other repositories can use this reusable workflow
+
+name: Example PR Validation
+
+on:
+  pull_request:
+    types: [opened, edited, ready_for_review, reopened]
+
+jobs:
+  azure-board-validation:
+    uses: jacobwood091/azure-board-reference-check/.github/workflows/prompt-for-azure-board-item.yaml@v1
+    with:
+      skip-drafts: true
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

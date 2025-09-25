@@ -1,0 +1,31 @@
+# Reusable workflow for Azure Board Reference validation
+# This workflow can be called by other repositories to enforce Azure Board work item references in PRs
+name: Azure Board Reference Check
+
+on:
+  workflow_call:
+    inputs:
+      skip-drafts:
+        description: "Skip validation for draft PRs"
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      GITHUB_TOKEN:
+        description: "GitHub token for API access"
+        required: false
+
+jobs:
+  azure-board-check:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Check for Azure Board Reference
+        id: check
+        uses: jacobwood091/azure-board-reference-check
+        with:
+          token: ${{ secrets.GITHUB_TOKEN || github.token }}
+          skip-drafts: ${{ inputs.skip-drafts || true }}
