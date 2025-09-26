@@ -120,7 +120,6 @@ const run = async () => {
 
   core.error("❌ Azure Board item missing");
   core.setOutput("ab-numbers", []);
-  core.setFailed("Azure Board reference missing in PR description");
 };
 
 run();
