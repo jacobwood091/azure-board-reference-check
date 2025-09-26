@@ -25,5 +25,4 @@ jobs:
         id: check
         uses: jacobwood091/azure-board-reference-check@main
         with:
-          token: ${{ github.token }}
           skip-drafts: ${{ inputs.skip-drafts || true }}
