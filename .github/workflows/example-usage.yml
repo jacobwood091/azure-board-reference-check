@@ -1,6 +1,6 @@
 # Example: How other repositories can use this reusable workflow
 
-name: Example PR Validation
+name: Azure Board Item Reference Check
 
 on:
   pull_request:
@@ -8,6 +8,11 @@ on:
 
 jobs:
   azure-board-validation:
-    uses: jacobwood091/azure-board-reference-check/.github/workflows/prompt-for-azure-board-item.yaml@v1
+    uses: jacobwood091/azure-board-reference-check/.github/workflows/prompt-for-azure-board-item.yaml@main
+    permissions:
+      checks: write
+      pull-requests: read
+      contents: read
+
     with:
       skip-drafts: true
