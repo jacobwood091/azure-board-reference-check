@@ -31035,7 +31035,7 @@ const run = async () => {
   }
 
   if (skipDrafts && pullRequest.draft) {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("⏭️ Skipping validation for draft PR");
+    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("Skipping validation for draft PR");
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
     return;
   }
@@ -31049,76 +31049,60 @@ const run = async () => {
   if (abMatches && abMatches.length > 0) {
     const references = abMatches.join(", ");
 
-    // Create job summary for rich formatting
     await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
       .addHeading("✅ Azure Board Reference Found")
-      .addRaw(`Found reference(s): **${references}**`)
+      .addRaw(`Found: **${references}**`)
       .addSeparator()
-      .addRaw("Azure Board reference(s) found in the PR description:")
+      .addRaw("Work items referenced in this PR:")
       .addList(abMatches)
       .write();
 
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`✅ Azure Board reference(s) found: ${references}`);
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", abMatches);
     return;
   }
 
   if (hasOverride) {
-    // Create job summary for bypass case
     await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
       .addHeading("✅ Azure Board Reference Check Bypassed")
       .addRaw("Check bypassed with `no-ab` keyword")
       .addSeparator()
       .addRaw(
-        "This PR has been explicitly marked as not requiring an Azure Board reference using the `no-ab` bypass keyword.",
+        "This PR has been marked as not requiring an Azure Board reference.",
       )
       .write();
 
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("✅ Override applied (no-ab)");
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
     return;
   }
 
-  // Use job summary for rich formatting visible in the workflow run
   await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
     .addHeading("❌ Azure Board Reference Missing")
     .addRaw("No Azure Board reference found in PR description")
     .addSeparator()
-    .addHeading("🔧 How to fix:", 2)
+    .addHeading("How to fix:", 2)
     .addList([
       "Add a work item reference like `AB#1234` to your PR description",
       "Or bypass the check by adding `no-ab` to your PR description",
     ])
     .addSeparator()
-    .addHeading("📝 Examples:", 2)
+    .addHeading("Examples:", 2)
     .addRaw("**With work item:**")
     .addCodeBlock(`Fixed login issue as described in AB#5678`, "markdown")
     .addRaw("**Without work item:**")
     .addCodeBlock(`Updated documentation - no-ab`, "markdown")
     .write();
 
-  // Use annotations to add inline feedback
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.error("Azure Board reference missing from PR description", {
-    title: "❌ Missing Azure Board Reference",
-  });
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`❌ Missing Azure Board Reference
 
-  // Use notice for additional visibility
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.notice(
-    '💡 Add AB#1234 to your PR description or use "no-ab" to bypass this check',
-  );
+This PR needs to be linked to an Azure Board work item.
 
-  // Use a detailed failure message
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`❌ AZURE BOARD REFERENCE MISSING
-
-📋 This PR needs to be linked to an Azure Board work item.
-
-🔧 HOW TO FIX:
-   1. Add a work item reference like AB#123456 to your PR description
+How to Fix:
+   1. Add a work item reference like AB#1234 to your PR description
    2. Or bypass the check by adding "no-ab" to your PR description
 
-📝 EXAMPLES:
-   ✅ With work item: "AB#123456"
-   ✅ Without work item: "Updated documentation – no-ab"
+Examples:
+   With work item: "Fixed login issue as described in AB#5678"
+   Without work item: "Updated documentation - no-ab"
 `);
 
   _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
