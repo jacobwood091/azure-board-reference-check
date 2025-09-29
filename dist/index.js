@@ -31135,9 +31135,9 @@ const run = async () => {
   }
 
   await updateCheck(owner, repo, sha, "completed", "failure", {
-    title: "❌ Azure Board Reference Missing",
+    title: "❌ Missing Azure Board Reference",
     summary: "No Azure Board reference found in PR description",
-    text: `## What's needed?\n\nThis PR needs to be linked to an Azure Board work item.\n\n## How to fix:\n\n1. **Add a work item reference** like \`AB#1234\` to your PR description\n2. **Or bypass the check** by adding \`no-ab\` to your PR description\n\n## Examples:\n\n**With work item:**\n\`\`\`\nFixed login issue as described in AB#5678\n\`\`\`\n\n**Without work item:**\n\`\`\`\nUpdated documentation - no-ab\n\`\`\``,
+    text: `## What's needed?\n\nThis PR needs to be linked to an Azure Board work item.\n\n## To fix, either:\n\n1. **Add a work item reference** in the format \`AB#123456\` to your PR description\n2. **Or bypass the check** by adding \`no-ab\` to your PR description\n\n## Examples:\n\n**With work item:**\n\`\`\`\nFixed login issue as described in AB#567891\n\`\`\`\n\n**Without work item:**\n\`\`\`\nUpdated documentation - no-ab\n\`\`\``,
   });
 
   _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning("❌ Azure Board item missing");
