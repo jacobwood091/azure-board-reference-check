@@ -25,12 +25,8 @@ const run = async () => {
   const hasOverride = /\bno-ab\b/i.test(description);
 
   if (abMatches && abMatches.length > 0) {
-    const references = abMatches.join(", ");
-
     await core.summary
       .addHeading("✅ Azure Board Reference Found")
-      .addRaw(`Found: **${references}**`)
-      .addSeparator()
       .addRaw("Work items referenced in this PR:")
       .addList(abMatches)
       .write();
@@ -57,16 +53,16 @@ const run = async () => {
     .addHeading("❌ Azure Board Reference Missing")
     .addRaw("No Azure Board reference found in PR description")
     .addSeparator()
-    .addHeading("How to fix:", 2)
+    .addHeading("To fix, either:", 2)
     .addList([
-      "Add a work item reference like `AB#1234` to your PR description",
+      "Add a work item reference in the format `AB#123456` to your PR description",
       "Or bypass the check by adding `no-ab` to your PR description",
     ])
     .addSeparator()
     .addHeading("Examples:", 2)
-    .addRaw("**With work item:**")
-    .addCodeBlock(`Fixed login issue as described in AB#5678`, "markdown")
-    .addRaw("**Without work item:**")
+    .addRaw("With work item:")
+    .addCodeBlock(`Fixed login issue as described in AB#123456`, "markdown")
+    .addRaw("Without work item:")
     .addCodeBlock(`Updated documentation - no-ab`, "markdown")
     .write();
 
@@ -74,12 +70,12 @@ const run = async () => {
 
 This PR needs to be linked to an Azure Board work item.
 
-How to Fix:
-   1. Add a work item reference like AB#1234 to your PR description
+To fix, either:
+   1. Add a work item reference in the format AB#123456 to your PR description
    2. Or bypass the check by adding "no-ab" to your PR description
 
 Examples:
-   With work item: "Fixed login issue as described in AB#5678"
+   With work item: "Fixed login issue as described in AB#123456"
    Without work item: "Updated documentation - no-ab"
 `);
 
