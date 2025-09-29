@@ -31140,9 +31140,8 @@ const run = async () => {
     text: `## What's needed?\n\nThis PR needs to be linked to an Azure Board work item.\n\n## How to fix:\n\n1. **Add a work item reference** like \`AB#1234\` to your PR description\n2. **Or bypass the check** by adding \`no-ab\` to your PR description\n\n## Examples:\n\n**With work item:**\n\`\`\`\nFixed login issue as described in AB#5678\n\`\`\`\n\n**Without work item:**\n\`\`\`\nUpdated documentation - no-ab\n\`\`\``,
   });
 
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.error("❌ Azure Board item missing");
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning("❌ Azure Board item missing");
   _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed("Azure Board reference missing in PR description");
 };
 
 run();
