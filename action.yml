@@ -4,10 +4,6 @@ branding:
   icon: "list"
   color: "blue"
 inputs:
-  token:
-    description: "GitHub token for API access"
-    required: false
-    default: "${{ github.token }}"
   skip-drafts:
     description: "Skip validation for draft PRs"
     required: false

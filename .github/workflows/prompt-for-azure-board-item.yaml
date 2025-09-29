@@ -15,7 +15,6 @@ jobs:
   azure-board-check:
     runs-on: ubuntu-latest
     permissions:
-      checks: write
       pull-requests: read
       contents: read
     outputs:
@@ -25,5 +24,4 @@ jobs:
         id: check
         uses: jacobwood091/azure-board-reference-check@main
         with:
-          token: ${{ github.token }}
           skip-drafts: ${{ inputs.skip-drafts || true }}

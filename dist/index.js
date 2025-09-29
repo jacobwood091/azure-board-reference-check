@@ -31027,64 +31027,6 @@ const { context } = /*#__PURE__*/ (_actions_github__WEBPACK_IMPORTED_MODULE_1___
 
 const pullRequest = context.payload.pull_request;
 const skipDrafts = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getBooleanInput("skip-drafts");
-const token = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("token");
-const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit(token);
-
-/**
- * Create or update a GitHub Check Run with rich formatting
- * @param {string} owner - Repository owner
- * @param {string} repo - Repository name
- * @param {string} sha - Commit SHA to associate the check run with
- * @param {"queued" | "in_progress" | "completed"} status - Check run status
- * @param {"success" | "failure" | "neutral" | "cancelled" | "skipped" | "timed_out" | "action_required"} conclusion - Check run conclusion
- * @param {{title: string, summary: string, text: string}} details - Details for the check run output
- */
-const updateCheck = async (owner, repo, sha, status, conclusion, details) => {
-  const checkName = "Azure Board Reference Check";
-
-  const existingChecks = await octokit.rest.checks.listForRef({
-    owner,
-    repo,
-    ref: sha,
-    check_name: checkName,
-    per_page: 1,
-  });
-
-  if (existingChecks.data.check_runs?.length > 0) {
-    const existingCheckRun = existingChecks.data.check_runs[0];
-    const response = await octokit.rest.checks.update({
-      check_run_id: existingCheckRun.id,
-      owner,
-      repo,
-      name: checkName,
-      head_sha: sha,
-      status,
-      conclusion,
-      output: {
-        title: details.title,
-        summary: details.summary,
-        text: details.text,
-      },
-    });
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`🔄 Updated existing check run: ${response.data.html_url}`);
-    return;
-  }
-
-  const response = await octokit.rest.checks.create({
-    owner,
-    repo,
-    name: checkName,
-    head_sha: sha,
-    status,
-    conclusion,
-    output: {
-      title: details.title,
-      summary: details.summary,
-      text: details.text,
-    },
-  });
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`✅ Created new check run: ${response.data.html_url}`);
-};
 
 const run = async () => {
   if (!pullRequest) {
@@ -31098,9 +31040,7 @@ const run = async () => {
     return;
   }
 
-  const { owner, repo } = context.repo;
   const description = pullRequest.body || "";
-  const sha = pullRequest.head.sha;
 
   // Check for Azure Board references (support multiple) or bypass
   const abMatches = description.match(/AB#\d+/g);
@@ -31109,13 +31049,14 @@ const run = async () => {
   if (abMatches && abMatches.length > 0) {
     const references = abMatches.join(", ");
 
-    await updateCheck(owner, repo, sha, "completed", "success", {
-      title: "✅ Azure Board Reference Found",
-      summary: `Found reference(s): **${references}**`,
-      text: `Azure Board reference(s) found in the PR description:\n\n${abMatches
-        .map((ref) => `- ${ref}`)
-        .join("\n")}`,
-    });
+    // Create job summary for rich formatting
+    await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
+      .addHeading("✅ Azure Board Reference Found")
+      .addRaw(`Found reference(s): **${references}**`)
+      .addSeparator()
+      .addRaw("Azure Board reference(s) found in the PR description:")
+      .addList(abMatches)
+      .write();
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`✅ Azure Board reference(s) found: ${references}`);
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", abMatches);
@@ -31123,24 +31064,63 @@ const run = async () => {
   }
 
   if (hasOverride) {
-    await updateCheck(owner, repo, sha, "completed", "success", {
-      title: "✅ Azure Board Reference Check Bypassed",
-      summary: "Check bypassed with `no-ab` keyword",
-      text: "This PR has been explicitly marked as not requiring an Azure Board reference using the `no-ab` bypass keyword.",
-    });
+    // Create job summary for bypass case
+    await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
+      .addHeading("✅ Azure Board Reference Check Bypassed")
+      .addRaw("Check bypassed with `no-ab` keyword")
+      .addSeparator()
+      .addRaw(
+        "This PR has been explicitly marked as not requiring an Azure Board reference using the `no-ab` bypass keyword.",
+      )
+      .write();
 
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("✅ Override applied (no-ab)");
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
     return;
   }
 
-  await updateCheck(owner, repo, sha, "completed", "failure", {
-    title: "❌ Azure Board Reference Missing",
-    summary: "No Azure Board reference found in PR description",
-    text: `## What's needed?\n\nThis PR needs to be linked to an Azure Board work item.\n\n## How to fix:\n\n1. **Add a work item reference** like \`AB#1234\` to your PR description\n2. **Or bypass the check** by adding \`no-ab\` to your PR description\n\n## Examples:\n\n**With work item:**\n\`\`\`\nFixed login issue as described in AB#5678\n\`\`\`\n\n**Without work item:**\n\`\`\`\nUpdated documentation - no-ab\n\`\`\``,
+  // Use job summary for rich formatting visible in the workflow run
+  await _actions_core__WEBPACK_IMPORTED_MODULE_0__.summary
+    .addHeading("❌ Azure Board Reference Missing")
+    .addRaw("No Azure Board reference found in PR description")
+    .addSeparator()
+    .addHeading("🔧 How to fix:", 2)
+    .addList([
+      "Add a work item reference like `AB#1234` to your PR description",
+      "Or bypass the check by adding `no-ab` to your PR description",
+    ])
+    .addSeparator()
+    .addHeading("📝 Examples:", 2)
+    .addRaw("**With work item:**")
+    .addCodeBlock(`Fixed login issue as described in AB#5678`, "markdown")
+    .addRaw("**Without work item:**")
+    .addCodeBlock(`Updated documentation - no-ab`, "markdown")
+    .write();
+
+  // Use annotations to add inline feedback
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.error("Azure Board reference missing from PR description", {
+    title: "❌ Missing Azure Board Reference",
   });
 
-  _actions_core__WEBPACK_IMPORTED_MODULE_0__.warning("❌ Azure Board item missing");
+  // Use notice for additional visibility
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.notice(
+    '💡 Add AB#1234 to your PR description or use "no-ab" to bypass this check',
+  );
+
+  // Use a detailed failure message
+  _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`❌ AZURE BOARD REFERENCE MISSING
+
+📋 This PR needs to be linked to an Azure Board work item.
+
+🔧 HOW TO FIX:
+   1. Add a work item reference like AB#123456 to your PR description
+   2. Or bypass the check by adding "no-ab" to your PR description
+
+📝 EXAMPLES:
+   ✅ With work item: "AB#123456"
+   ✅ Without work item: "Updated documentation – no-ab"
+`);
+
   _actions_core__WEBPACK_IMPORTED_MODULE_0__.setOutput("ab-numbers", []);
 };
 

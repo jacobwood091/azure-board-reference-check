@@ -9,7 +9,6 @@ jobs:
     name: Azure Board Reference Check
     runs-on: ubuntu-latest
     permissions:
-      checks: write
       pull-requests: read
       contents: read
     steps:
